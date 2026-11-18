@@ -1,0 +1,17 @@
+## .NET / ASP.NET Core
+bin/
+obj/
+out/
+publish/
+*.user
+*.suo
+.vs/
+.vscode/
+
+## Logs
+logs/
+*.log
+
+## Config local con secretos reales (no versionar)
+appsettings.Local.json
+appsettings.Production.json
