@@ -75,8 +75,20 @@ dotnet publish -c Release -o ./publish
 - **Salida** del gateway: a FalconCAD (`falconcad.com.co`) y a SECAD.
 - En SECAD: confirmar que `34.231.219.210` esté habilitada también para el endpoint que recibe el flujo inverso.
 
-## Pendientes a definir con las contrapartes
+## Decisión de contratos (confirmada)
 
-- **Contrato del flujo inverso** (FalconCAD → gateway → SECAD): payload que envía FalconCAD y el
-  contrato exacto que espera SECAD (si requiere mapeo, va en `SecadClient`).
-- **Auth hacia SECAD**: si SECAD exige token/api-key propio, configurarlo en `Secad.AuthHeader*`.
+**Opción A:** cada sistema envía ya en el contrato que el destino requiere, por lo que el gateway
+**solo reenvía** (sin mapeo):
+
+- SECAD envía en el contrato de FalconCAD (`CasoFalconCadRequest`) → `EnviarAFalcon`.
+- FalconCAD envía en el contrato de SECAD (`CasoSecadRequest`) → `EnviarASecad`.
+
+Ambos contratos están tipados en `Models/Contratos.cs` y documentados en Swagger.
+
+## Pendientes de configuración
+
+- **`Secad.Url`**: endpoint real de SECAD que recibe el flujo inverso (hoy placeholder en appsettings).
+- **Auth hacia SECAD**: si SECAD exige token/api-key propio, configurarlo en `Secad.AuthHeaderNombre` /
+  `Secad.AuthHeaderValor`.
+- **Secretos**: cambiar credenciales del gateway y `ClaveFirma` del JWT; mover secretos reales a
+  `appsettings.Production.json` o variables de entorno.
