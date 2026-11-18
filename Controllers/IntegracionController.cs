@@ -1,3 +1,4 @@
+using System.Text.Json;
 using GatewaySocialCity.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,9 +38,9 @@ namespace GatewaySocialCity.Controllers
         /// <summary>SECAD -> FalconCAD. Reenvía el cuerpo recibido a FalconCAD (x-api-key).</summary>
         [HttpPost("EnviarAFalcon")]
         [Authorize]
-        public async Task<IActionResult> EnviarAFalcon()
+        public async Task<IActionResult> EnviarAFalcon([FromBody] JsonElement caso)
         {
-            string body = await LeerCuerpoAsync();
+            string body = caso.GetRawText();
             _log.LogInformation("EnviarAFalcon: {Len} bytes", body.Length);
             var (status, cuerpo) = await _falcon.RadicarCasoAsync(body);
             return Reenviar(status, cuerpo);
@@ -48,18 +49,12 @@ namespace GatewaySocialCity.Controllers
         /// <summary>FalconCAD -> SECAD. Reenvía el cuerpo recibido a SECAD (desde la IP habilitada).</summary>
         [HttpPost("EnviarASecad")]
         [Authorize]
-        public async Task<IActionResult> EnviarASecad()
+        public async Task<IActionResult> EnviarASecad([FromBody] JsonElement caso)
         {
-            string body = await LeerCuerpoAsync();
+            string body = caso.GetRawText();
             _log.LogInformation("EnviarASecad: {Len} bytes", body.Length);
             var (status, cuerpo) = await _secad.EnviarCasoAsync(body);
             return Reenviar(status, cuerpo);
-        }
-
-        private async Task<string> LeerCuerpoAsync()
-        {
-            using var reader = new StreamReader(Request.Body);
-            return await reader.ReadToEndAsync();
         }
 
         private IActionResult Reenviar(System.Net.HttpStatusCode status, string cuerpo)
